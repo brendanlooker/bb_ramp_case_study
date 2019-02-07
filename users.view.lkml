@@ -135,7 +135,7 @@ view: users {
 
   measure: average_spend_per_user {
     type: number
-    sql: 1.0*${order_items_fact.total_sales}/${user_count} ;;
+    sql: 1.0*${order_items.total_sales}/${user_count} ;;
     value_format_name: usd_0
     description: "Average spend per User (all Users)"
   }

@@ -37,13 +37,8 @@ explore: order_items {
   }
   join: users {
     type: left_outer
-    sql_on: ${users.id} = ${order_items.user_id} ;;
+    sql_on: ${order_items.user_id} = ${users.id} ;;
     relationship: many_to_one
-  }
-  join: users_fact {
-    type: inner
-    sql_on: users.id = ${users_fact.id} ;;
-    relationship: one_to_one
   }
   join: events {
     type: left_outer
@@ -63,11 +58,6 @@ explore: users {
     sql_on: ${users.id} = ${events.user_id} ;;
     relationship: one_to_many
   }
-  join: users_fact {
-    type: inner
-    sql_on: users.id = ${users_fact.id} ;;
-    relationship: one_to_one
-  }
   join: order_items {
     type: left_outer
     sql_on: ${users.id}= ${order_items.user_id} ;;
@@ -81,7 +71,7 @@ explore: users {
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id}=${inventory_items.id} ;;
-    relationship: one_to_many
+    relationship: one_to_one
   }
   label: "2) Customers"
   group_label: "Ecommerce BB"
