@@ -173,6 +173,10 @@ view: order_items {
     value_format_name: percent_2
   }
 
+  measure: order_item_count {
+    type: count
+    drill_fields: [detail*]
+  }
 
 
 

@@ -32,6 +32,11 @@ view: users {
     drill_fields: [state]
   }
 
+  dimension: country_map {
+    map_layer_name: countries
+    sql: ${country} ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
@@ -44,6 +49,11 @@ view: users {
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: days_since_signup {
+    type: number
+    sql: datediff(day,${created_date}, now()) ;;
   }
 
   dimension: email {

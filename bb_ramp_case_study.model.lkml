@@ -4,15 +4,19 @@ connection: "thelook_events_redshift"
 include: "*.view"
 
 # datagroup: bb_ramp_case_study_default_datagroup {
-#   # sql_trigger: SELECT MAX(id) FROM etl_log;;
-#   max_cache_age: "1 hour"
-# }
 
-#persist_with: bb_ramp_case_study_default_datagroup
-
-###################################################
 
 explore: order_items {
+
+
+#   access_filter: {
+#     field: products.brand
+#     user_attribute: brand
+#     }
+#   access_filter: {
+#     field: users.state
+#     user_attribute: brand
+#   }
 
   join: order_items_fact {
     type: inner
@@ -44,6 +48,11 @@ explore: order_items {
     type: left_outer
     sql_on: ${events.user_id}=${users.id} ;;
     relationship: one_to_many
+  }
+  join: ndt_orders {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${ndt_orders.order_id} = ${order_items.order_id} ;;
   }
   label: "1) Order Items"
   group_label: "Ecommerce BB"
