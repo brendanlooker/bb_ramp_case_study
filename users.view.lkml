@@ -52,8 +52,28 @@ view: users {
   }
 
   dimension: days_since_signup {
+    hidden: yes
     type: number
-    sql: datediff(day,${created_date}, now()) ;;
+    sql: datediff(day,${created_date}, getdate()) ;;
+  }
+
+  dimension: days_since_signup_tiers {
+    type: tier
+    tiers: [5,10,30,60,90,180,360]
+    style: integer
+    sql: ${days_since_signup} ;;
+  }
+
+  dimension: months_since_signup {
+    hidden: yes
+    type: number
+    sql: datediff(month,${created_date}, getdate()) ;;
+  }
+
+  dimension: months_since_signup_tiers {
+    type: tier
+    tiers: [1,3,6,12,18]
+    sql: ${months_since_signup} ;;
   }
 
   dimension: email {
@@ -148,6 +168,16 @@ view: users {
     sql: 1.0*${order_items.total_sales}/${user_count} ;;
     value_format_name: usd_0
     description: "Average spend per User (all Users)"
+  }
+
+  measure: average_days_since_signup {
+    type: average
+    sql: ${days_since_signup} ;;
+  }
+
+  measure: average_months_since_signip {
+    type: average
+    sql: ${months_since_signup} ;;
   }
 
   measure: user_count {
