@@ -5,7 +5,7 @@ view: ndt_orders {
         column: order_item_count {}
         column: total_gross_revenue {}
         derived_column: average_revenue_per_item {sql: total_gross_revenue/order_item_count;;}
-        derived_column: revenue_rank {sql: rank () over average_revenue_per_item order by average_revenue_per_item desc ;; }
+        derived_column: revenue_rank {sql: rank () over (average_revenue_per_item order by average_revenue_per_item desc) ;; }
       }}
 
     dimension: order_id {
@@ -22,6 +22,6 @@ view: ndt_orders {
       value_format: "$#,##0"
       type: number
     }
-    dimension: average_revenue_per_item {type:number}
+    measure: average_revenue_per_item {type:number}
     dimension: revenue_rank {type:number}
   }

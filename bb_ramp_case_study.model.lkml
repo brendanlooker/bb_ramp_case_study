@@ -110,3 +110,8 @@ explore: customer_behaviour_fact {
     relationship: many_to_one
     }
 }
+
+explore: ndt_orders {
+  label: "4) NDT Orders"
+  group_label: "Ecommerce BB"
+}
