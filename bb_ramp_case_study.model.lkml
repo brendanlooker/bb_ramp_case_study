@@ -111,7 +111,7 @@ explore: customer_behaviour_fact {
     }
 }
 
-explore: ndt_orders {
-  label: "4) NDT Orders"
-  group_label: "Ecommerce BB"
-}
+# explore: ndt_orders {
+#   label: "4) NDT Orders"
+#   group_label: "Ecommerce BB"
+# }
