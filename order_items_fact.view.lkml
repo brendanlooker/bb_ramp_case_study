@@ -60,6 +60,6 @@ view: order_items_fact {
     }
 
     set: detail {
-      fields: [id, average_gross_margin]
+      fields: [id, average_gross_margin,days_to_previous_order]
     }
   }
