@@ -1,3 +1,4 @@
+include: "customer_behaviour.view.lkml"
 view: customer_behaviour_fact {
     derived_table: {
       sql: select users.id as user_id,
@@ -13,11 +14,18 @@ left outer join products on inventory_items.product_id = products.id
 group by 1
  ;;
     }
+#   extends: [customer_behaviour]
+
+  dimension: id {
+    type: number
+    sql: ${TABLE}.user_id ;;
+    primary_key: yes
+  }
 
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
-    primary_key: yes
+#     primary_key: yes
   }
 
   dimension_group: first_order {

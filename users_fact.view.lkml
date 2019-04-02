@@ -1,36 +1,35 @@
+include: "bb_ramp_case_study.model.lkml"
 include: "users.view.lkml"
+
 view: users_fact {
+
   extends: [users]
 
-dimension: id {
-  primary_key: yes
-  type: number
-  sql: ${TABLE}.id ;;
-  }
 
-  measure: users_who_have_returned_items {
-    type: count_distinct
-    sql: ${id} ;;
-    filters: {
-      field: order_items.returned_date
-      value: "-NULL"
-
+  derived_table: {
+    explore_source: order_items {
+      column: count_of_repeat_purchases_within_60_days { field: order_items_fact.count_of_repeat_purchases_within_60_days }
+      column: id { field: users.id }
     }
-    description: "Count of distinct users who have returned an item"
+  }
+  dimension: count_of_repeat_purchases_within_60_days {
+    hidden: yes
+    label: "Orders 60 Day Repeat Purchase Count"
+    description: "Count of Purchases occurring within 60 days of a pervious purchase"
   }
 
-  measure: users_with_returns_pct {
+  measure: sum_60_day_repeat_purchase {
+    hidden: yes
+    type: sum
+    sql: ${count_of_repeat_purchases_within_60_days} ;;
+  }
+
+  measure: is_60_day_repeat_purchase_user {
+    type: yesno
+    sql: ${sum_60_day_repeat_purchase} > 0 ;;
+  }
+
+  dimension: id {
     type: number
-    sql: 1.0*${users_who_have_returned_items}/${user_count};;
-    value_format_name: percent_2
-    description: "Percentage of Users who have returned an item"
   }
-
-  measure: average_spend_per_user {
-    type: number
-    sql: 1.0*${order_items.total_sales}/${user_count} ;;
-    value_format_name: usd_0
-    description: "Average spend per User (all Users)"
-  }
-
 }

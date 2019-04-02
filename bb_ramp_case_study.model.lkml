@@ -58,6 +58,8 @@ explore: order_items {
   group_label: "Ecommerce BB"
 }
 
+# explore: order_items {}
+# explore: products_extended {}
 
 ####################################
 
@@ -110,6 +112,38 @@ explore: customer_behaviour_fact {
     relationship: many_to_one
     }
 }
+
+explore: users_fact {
+  join: order_items {
+    type: left_outer
+    sql_on: ${users_fact.id}= ${order_items.user_id} ;;
+    relationship: one_to_many
+    }
+  join: inventory_items {
+    type: left_outer
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id};;
+    relationship: one_to_one
+  }
+}
+
+# explore: users_all {
+#   from: users_fact
+#   join: order_items {
+#     relationship: one_to_many
+#     sql_on: ${users_all.id}=${order_items.user_id} ;;
+#   }
+#   join: inventory_items {
+#     sql_on: ${inventory_items.id}=${order_items.inventory_item_id} ;;
+#     relationship: one_to_one
+#   }
+# }
+
+# explore: order_items_extended { from:order_items    join: inventory_items {
+#     type: inner
+#     sql_on: ${inventory_items.id}=${order_items_extended.inventory_item_id};;
+#     relationship: one_to_one
+#   }}
+
 
 # explore: ndt_orders {
 #   label: "4) NDT Orders"
