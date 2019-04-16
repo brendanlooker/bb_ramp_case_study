@@ -9,10 +9,10 @@ include: "*.view"
 explore: order_items {
 
 
-#   access_filter: {
-#     field: products.brand
-#     user_attribute: brand
-#     }
+  access_filter: {
+    field: products.brand
+    user_attribute: brand
+    }
 #   access_filter: {
 #     field: users.state
 #     user_attribute: brand
@@ -22,7 +22,8 @@ explore: order_items {
     type: inner
     sql_on: ${order_items.id}=${order_items_fact.id} ;;
     relationship: one_to_one
-    view_label: "Orders"
+#     view_label: "Order Items Fact"
+#     fields: [detail*, -order_items_fact.id]
   }
   join: inventory_items {
     type: left_outer
@@ -64,7 +65,17 @@ explore: order_items {
 ####################################
 
 explore: users {
+
+  # join: period_over_period {
+  #   type:cross
+  #   # sql_on:${period_over_period.dummy_dim} = ${users.id};;
+  #   relationship: many_to_one
+
+  # }
+  # always_join: [period_over_period]
+
   join: events {
+
     type: left_outer
     sql_on: ${users.id} = ${events.user_id} ;;
     relationship: one_to_many
@@ -80,9 +91,11 @@ explore: users {
     relationship: one_to_one
   }
   join: inventory_items {
+#     view_label: "Users" -- Relable
     type: left_outer
     sql_on: ${order_items.inventory_item_id}=${inventory_items.id} ;;
     relationship: one_to_one
+#     fields: [inventory_items.cost, inventory_items.average_cost] -- bring in fields needed
   }
   label: "2) Customers"
   group_label: "Ecommerce BB"
@@ -113,18 +126,19 @@ explore: customer_behaviour_fact {
     }
 }
 
-explore: users_fact {
-  join: order_items {
-    type: left_outer
-    sql_on: ${users_fact.id}= ${order_items.user_id} ;;
-    relationship: one_to_many
-    }
-  join: inventory_items {
-    type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id};;
-    relationship: one_to_one
-  }
-}
+# explore: users_fact {
+#   join: order_items {
+#     type: left_outer
+#     sql_on: ${users_fact.id}= ${order_items.user_id} ;;
+#     relationship: one_to_many
+#     fields: [users_fact.id]
+#     }
+#   join: inventory_items {
+#     type: left_outer
+#     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id};;
+#     relationship: one_to_one
+#   }
+# }
 
 # explore: users_all {
 #   from: users_fact

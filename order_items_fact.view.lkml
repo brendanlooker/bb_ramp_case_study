@@ -1,3 +1,4 @@
+include: "order_items.view.lkml"
 view: order_items_fact {
     derived_table: {
       sql: select order_items.id,
@@ -10,7 +11,7 @@ view: order_items_fact {
     }
     view_label: "Orders"
 
-#     extends: [order_items]
+    extends: [order_items]
 
 
     dimension: id {
@@ -66,6 +67,6 @@ view: order_items_fact {
 
     set: detail {
 #       fields: [id, average_gross_margin,days_to_previous_order,total_gross_revenue]
-      fields: [id,order_sequence,order_items.sale_price]
+      fields: [id,order_sequence,sale_price]
     }
   }

@@ -45,11 +45,138 @@ view: users {
       date,
       week,
       month,
+      month_name,
+      month_num,
       quarter,
       year
     ]
     sql: ${TABLE}.created_at ;;
   }
+
+  parameter: period_over_period {
+    description: "Period-over-Period Options"
+    type: string
+    label: "Period-over-Period"
+    allowed_value: {
+      label: "Year-over-Year"
+      value: "YoY"
+    }
+    allowed_value: {
+      label: "Month-over-Month (v Previous Year)"
+      value: "MoM-Y"
+    }
+    allowed_value: {
+      label: "Month-over-Month (v Previous Month)"
+      value: "MoM-M"
+    }
+    allowed_value: {
+      label: "Quarter-over-Quarter (v Previous Quarter)"
+      value: "QoQ-Q"
+    }
+    allowed_value: {
+      label: "Quarter-over-Quarter (v Previous Year)"
+      value: "QoQ-Y"
+    }
+  }
+
+  parameter: period_over_period_offset {
+    type: number
+    default_value: "0"
+    description: "Used to offset the Month and Quarter PoP Analysis"
+  }
+
+  filter: period_over_period_filter {
+    description: "Required in order to dynamically inject SQL into the where clause based on the period-over-period analysis required"
+    hidden: no
+    default_value: "is not null"
+    type: string
+    sql: {% if period_over_period._parameter_value == "'YoY'" %}
+
+      extract(month from ${created_date}) < extract(month from getdate())
+      or (extract(month from ${created_date}) = extract(month from getdate()) and extract(day from ${created_date}) <= extract(day from getdate()))
+
+    {% elsif period_over_period._parameter_value == "'MoM-Y'" %}
+
+    extract(month from ${created_date}) = extract(month from dateadd(month,{% parameter period_over_period_offset %},getdate()))
+    and extract(day from ${created_date}) <= extract(day from dateadd(month,{% parameter period_over_period_offset %},getdate()))
+
+    {% elsif period_over_period._parameter_value == "'MoM-M'" %}
+
+    ${created_date} >= date_trunc('month',dateadd(month,-1,dateadd(month,{% parameter period_over_period_offset %},getdate())))
+    and ${created_date} <= last_day(dateadd(month,{% parameter period_over_period_offset %},getdate()))
+    and extract(day from ${created_date}) <= extract(day from getdate())
+
+    {% elsif period_over_period._parameter_value == "'QoQ-Q'" %}
+
+    ${created_date} >= date_trunc('quarter',dateadd(quarter,-2,dateadd(quarter,{% parameter period_over_period_offset %},getdate())))
+    and ${created_date} <= dateadd(day,-1,date_trunc('quarter',dateadd(quarter,0,dateadd(quarter,{% parameter period_over_period_offset %},getdate()))))
+        and extract(day from (${created_date} - date_trunc('quarter', ${created_date})))+1 <= extract(day from (getdate() - date_trunc('quarter', getdate())))+1 -- need to generate the quarter day, otherwise ewsults from days within future months in the quarter will be included
+
+    {% elsif period_over_period._parameter_value == "'QoQ-Y'" %}
+
+    extract(quarter from ${created_date}) = extract(quarter from dateadd(quarter,{% parameter period_over_period_offset %},getdate()))
+    and extract(month from ${created_date}) <= extract(month from dateadd(quarter,{% parameter period_over_period_offset %},getdate()))
+    and extract(day from (${created_date} - date_trunc('quarter', ${created_date})))+1 <= extract(day from (getdate() - date_trunc('quarter', getdate())))+1 -- need to generate the quarter day, otherwise ewsults from days within future months in the quarter will be included
+
+
+    {% else %}
+
+      NULL
+    {% endif %} ;;
+  }
+
+
+  filter: users_cities_filter {
+    type: string
+    full_suggestions: yes
+    suggest_dimension: city
+
+  }
+
+  dimension: east_coast_city_choice {
+    type: string
+    sql:  case when {% condition users_cities_filter %} ${city} {% endcondition %} then 1 else 0 end;;
+  }
+
+
+  measure: period_over_period_user_count {
+    description: ""
+    type: number
+    sql: {% if period_over_period._parameter_value == "'YoY'" %}
+
+           sum(case when ( extract(month from ${created_date}) < extract(month from getdate())
+            or (extract(month from ${created_date}) = extract(month from getdate()) and extract(day from ${created_date}) <= extract(day from getdate()))) then 1 else NULL end)
+
+          {% elsif period_over_period._parameter_value == "'MoM-Y'" %}
+
+          sum(case when (extract(month from ${created_date}) = extract(month from dateadd(month,{% parameter period_over_period_offset %},getdate()))
+          and extract(day from ${created_date}) <= extract(day from dateadd(month,{% parameter period_over_period_offset %},getdate()))) then 1 else NULL end)
+
+          {% elsif period_over_period._parameter_value == "'MoM-M'" %}
+
+          sum(case when (${created_date} >= date_trunc('month',dateadd(month,-1,dateadd(month,{% parameter period_over_period_offset %},getdate())))
+          and ${created_date} <= last_day(dateadd(month,{% parameter period_over_period_offset %},getdate()))
+          and extract(day from ${created_date}) <= extract(day from getdate())) then 1 else NULL end)
+
+          {% elsif period_over_period._parameter_value == "'QoQ-Q'" %}
+
+          sum(case when (${created_date} >= date_trunc('quarter',dateadd(quarter,-1,dateadd(quarter,{% parameter period_over_period_offset %},getdate())))
+          and ${created_date} <= dateadd(day,-1,date_trunc('quarter',dateadd(quarter,1,dateadd(quarter,{% parameter period_over_period_offset %},getdate()))))
+              and extract(day from (${created_date} - date_trunc('quarter', ${created_date})))+1 <= extract(day from (getdate() - date_trunc('quarter', getdate())))+1) then 1 else NULL end) -- need to generate the quarter day, otherwise ewsults from days within future months in the quarter will be included
+
+          {% elsif period_over_period._parameter_value == "'QoQ-Y'" %}
+
+          sum(case when (extract(quarter from ${created_date}) = extract(quarter from dateadd(quarter,{% parameter period_over_period_offset %},getdate()))
+          and extract(month from ${created_date}) <= extract(month from dateadd(quarter,{% parameter period_over_period_offset %},getdate()))
+          and extract(day from (${created_date} - date_trunc('quarter', ${created_date})))+1 <= extract(day from (getdate() - date_trunc('quarter', getdate())))+1) then 1 else NULL end) -- need to generate the quarter day, otherwise ewsults from days within future months in the quarter will be included
+
+
+          {% else %}
+
+            NULL
+          {% endif %} ;;
+  }
+
 
   dimension: days_since_signup {
     hidden: yes
