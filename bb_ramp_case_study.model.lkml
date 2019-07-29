@@ -7,6 +7,7 @@ include: "*.view"
 
 
 explore: order_items {
+  from: order_items_fact
 
 
   access_filter: {
@@ -18,13 +19,13 @@ explore: order_items {
 #     user_attribute: brand
 #   }
 
-  join: order_items_fact {
-    type: inner
-    sql_on: ${order_items.id}=${order_items_fact.id} ;;
-    relationship: one_to_one
+#   join: order_items_fact {
+#     type: inner
+#     sql_on: ${order_items.id}=${order_items_fact.id} ;;
+#     relationship: one_to_one
 #     view_label: "Order Items Fact"
 #     fields: [detail*, -order_items_fact.id]
-  }
+#   }
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id};;
@@ -159,7 +160,7 @@ explore: customer_behaviour_fact {
 #   }}
 
 
-# explore: ndt_orders {
-#   label: "4) NDT Orders"
-#   group_label: "Ecommerce BB"
-# }
+explore: ndt_orders {
+  label: "4) NDT Orders"
+  group_label: "Ecommerce BB"
+}

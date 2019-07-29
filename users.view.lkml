@@ -85,6 +85,20 @@ view: users {
     description: "Used to offset the Month and Quarter PoP Analysis"
   }
 
+  filter: states {
+    suggest_dimension: state
+  }
+
+  dimension: mvp_states {
+    type: string
+    sql:  case when {% condition states %} ${state} {% endcondition %} then ${state} else 'Other' End;;
+  }
+
+  measure: state_count {
+    type: sum
+    sql: case when {% condition states %} ${state} {% endcondition %} then 1 else null end ;;
+  }
+
   filter: period_over_period_filter {
     description: "Required in order to dynamically inject SQL into the where clause based on the period-over-period analysis required"
     hidden: no
