@@ -69,7 +69,6 @@ explore: order_items {
 ####################################
 
 explore: users {
-  sql_preamble: select 1; ;;
 
   # join: period_over_period {
   #   type:cross

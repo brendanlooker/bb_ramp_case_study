@@ -1,7 +1,7 @@
 include: "order_items.view.lkml"
 view: order_items_fact {
     derived_table: {
-      sql: select order_items.id,
+      sql: select order_items.id,inventory_item_id,sale_price,
               case when ((order_items.returned_at  IS NULL) AND (order_items.status <> 'Cancelled' OR order_items.status IS NULL)) then order_items.sale_price else 0 End - inventory_items.cost as gross_margin,
               dense_rank() over (partition by user_id order by order_items.created_at asc) as order_sequence,
               nvl(datediff(day,lag(order_items.created_at,1) over (partition by user_id order by order_items.created_at asc),order_items.created_at),0) as days_to_previous_order,
