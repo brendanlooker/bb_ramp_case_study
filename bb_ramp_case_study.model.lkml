@@ -2,11 +2,14 @@ connection: "thelook_events_redshift"
 
 # include all the views
 include: "*.view"
+include: "performance_dash.dashboard"
 
 # datagroup: bb_ramp_case_study_default_datagroup {
 
 
 explore: order_items {
+
+
   from: order_items_fact
 
 
@@ -56,7 +59,7 @@ explore: order_items {
     relationship: many_to_one
     sql_on: ${ndt_orders.order_id} = ${order_items.order_id} ;;
   }
-  label: "1) Order Items"
+  label: "1) Order Items Test"
   group_label: "Ecommerce BB"
 }
 
@@ -66,6 +69,7 @@ explore: order_items {
 ####################################
 
 explore: users {
+  sql_preamble: select 1; ;;
 
   # join: period_over_period {
   #   type:cross
@@ -76,6 +80,7 @@ explore: users {
   # always_join: [period_over_period]
 
   join: events {
+
 
     type: left_outer
     sql_on: ${users.id} = ${events.user_id} ;;
@@ -159,7 +164,7 @@ explore: customer_behaviour_fact {
 #     relationship: one_to_one
 #   }}
 
-
+#
 explore: ndt_orders {
   label: "4) NDT Orders"
   group_label: "Ecommerce BB"
