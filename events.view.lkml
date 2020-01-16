@@ -7,6 +7,13 @@ view: events {
     sql: ${TABLE}.id ;;
   }
 
+  dimension: id2 {
+    # primary_key: yes
+    type: number
+    sql: ${TABLE}.id ;;
+  }
+
+
   dimension: browser {
     type: string
     sql: ${TABLE}.browser ;;
