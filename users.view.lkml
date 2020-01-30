@@ -222,6 +222,10 @@ view: users {
     sql: ${TABLE}.email ;;
   }
 
+  dimension: bb_email {
+    sql: 'brendan.buckley@looker.com' ;;
+  }
+
   dimension: first_name {
     type: string
     sql: ${TABLE}.first_name ;;
