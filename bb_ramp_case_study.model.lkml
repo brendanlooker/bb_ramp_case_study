@@ -1,16 +1,38 @@
-connection: "thelook_events_redshift"
+connection: "snowlooker"
 
 # include all the views
 include: "*.view"
+include: "*.dashboard"
 include: "performance_dash.dashboard"
 
 # datagroup: bb_ramp_case_study_default_datagroup {
 
+# Place in `bb_ramp_case_study` model
+# explore: +order_items {
+
+#     query: orders {
+#       dimensions: [
+#         # "products.brand" is automatically filtered on in an access_filter.
+#         # Uncomment to allow all possible filters to work with aggregate awareness.
+#         # products.brand,
+#         products.brand,
+#         status
+#       ]
+#       measures: [average_sale_price]
+#       filters: [
+#         # "products.brand" is automatically filtered on in an access_filter in this query.
+#         # Remove this filter to allow all possible filters to work with aggregate awareness.
+#         products.brand: "%"
+#       ]
+#       timezone: "GMT"
+#     }
+
+# }
 
 explore: order_items {
 
 
-  from: order_items_fact
+#   from: order_items_fact
 
 
   access_filter: {
@@ -59,7 +81,7 @@ explore: order_items {
     relationship: many_to_one
     sql_on: ${ndt_orders.order_id} = ${order_items.order_id} ;;
   }
-  label: "1) Order Items Test"
+  label: "1) Order Items"
   group_label: "Ecommerce BB"
 }
 

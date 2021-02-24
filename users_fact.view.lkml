@@ -8,7 +8,7 @@ view: users_fact {
 
   derived_table: {
     explore_source: order_items {
-      column: count_of_repeat_purchases_within_60_days { field: order_items.count_of_repeat_purchases_within_60_days }
+#       column: count_of_repeat_purchases_within_60_days { field: order_items.count_of_repeat_purchases_within_60_days }
       column: id { field: users.id }
     }
   }

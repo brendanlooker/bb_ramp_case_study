@@ -8,6 +8,8 @@ view: customer_behaviour {
     sql: ${TABLE}.id ;;
   }
 
+# This is a comment
+
   measure: customer_lifetime_orders {
     hidden: yes
     type: count_distinct
