@@ -2,7 +2,7 @@ view: events {
   sql_table_name: `lookerdata.thelook_web_analytics.events`
     ;;
   drill_fields: [id]
-
+# This is a comment
   dimension: id {
     primary_key: yes
     type: number
